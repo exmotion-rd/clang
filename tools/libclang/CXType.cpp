@@ -807,6 +807,20 @@ long long clang_getArraySize(CXType CT) {
   return result;
 }
 
+CXCursor clang_getVariableArraySize(CXType CT) {
+  QualType T = GetQualType(CT);
+
+  if (const Type *TP = T.getTypePtrOrNull()) {
+    if (TP->getTypeClass() == Type::VariableArray) {
+      const Expr *size = cast<VariableArrayType>(TP)->getSizeExpr();
+	  if (const ImplicitCastExpr *ICE = dyn_cast<ImplicitCastExpr>(size))
+		  size = ICE->getSubExpr();
+	  return cxcursor::MakeCXCursor(size, 0, GetTU(CT));
+    }
+  }
+  return cxcursor::MakeCXCursorInvalid(CXCursor_InvalidCode);
+}
+
 long long clang_Type_getAlignOf(CXType T) {
   if (T.kind == CXType_Invalid)
     return CXTypeLayoutError_Invalid;

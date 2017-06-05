@@ -4776,6 +4776,8 @@ CXString clang_getCursorKindSpelling(enum CXCursorKind Kind) {
       return cxstring::createRef("ArraySubscriptExpr");
   case CXCursor_OMPArraySectionExpr:
       return cxstring::createRef("OMPArraySectionExpr");
+  case CXCursor_ImplicitCastExpr:
+      return cxstring::createRef("ImplicitCastExpr");
   case CXCursor_BinaryOperator:
       return cxstring::createRef("BinaryOperator");
   case CXCursor_CompoundAssignOperator:
@@ -4846,6 +4848,16 @@ CXString clang_getCursorKindSpelling(enum CXCursorKind Kind) {
       return cxstring::createRef("SizeOfPackExpr");
   case CXCursor_LambdaExpr:
     return cxstring::createRef("LambdaExpr");
+  case CXCursor_OffsetOfExpr:
+    return cxstring::createRef("OffsetOfExpr");
+  case CXCursor_PredefinedExpr:
+    return cxstring::createRef("PredefinedExpr");
+  case CXCursor_DesignatedInitExpr:
+    return cxstring::createRef("DesignatedInitExpr");
+  case CXCursor_DesignatedInitUpdateExpr:
+    return cxstring::createRef("DesignatedInitUpdateExpr");
+  case CXCursor_VAArgExpr:
+    return cxstring::createRef("VAArgExpr");
   case CXCursor_UnexposedExpr:
       return cxstring::createRef("UnexposedExpr");
   case CXCursor_DeclRefExpr:
@@ -5377,6 +5389,15 @@ unsigned clang_isUnexposed(enum CXCursorKind K) {
     default:
       return false;
   }
+}
+
+unsigned clang_hasInit(CXCursor C) {
+  if (const Decl *D = getCursorDecl(C)) {
+    if (const VarDecl *VD = dyn_cast<VarDecl>(D)) {
+      return VD->hasInit();
+    }
+  }
+  return false;
 }
 
 CXCursorKind clang_getCursorKind(CXCursor C) {
@@ -6182,6 +6203,127 @@ void clang_enableStackTraces(void) {
 void clang_executeOnThread(void (*fn)(void*), void *user_data,
                            unsigned stack_size) {
   llvm::llvm_execute_on_thread(fn, user_data, stack_size);
+}
+
+CXString clang_getOperationString(CXCursor C) {
+  if (const Expr *E = getCursorExpr(C)) {
+    if (const BinaryOperator *Op = dyn_cast<BinaryOperator>(E))
+      return cxstring::createDup(clang::BinaryOperator::getOpcodeStr(Op->getOpcode()));
+
+    if (const UnaryOperator *Op = dyn_cast<UnaryOperator>(E))
+      return cxstring::createDup(clang::UnaryOperator::getOpcodeStr(Op->getOpcode()));
+
+    if (const CompoundAssignOperator *Op = dyn_cast<CompoundAssignOperator>(E))
+      return cxstring::createDup(clang::CompoundAssignOperator::getOpcodeStr(Op->getOpcode()));
+  }
+
+  return cxstring::createEmpty();
+}
+
+unsigned clang_isLValue(CXCursor C) {
+  if (!clang_isExpression(C.kind))
+    return false;
+
+  const Expr *E = getCursorExpr(C);
+  return E->isLValue();
+}
+
+CXString clang_getLiteralString(CXCursor C) {
+  if (const Expr *E = getCursorExpr(C)) {
+    if (const IntegerLiteral *IL = dyn_cast<IntegerLiteral>(E))
+      return cxstring::createDup(IL->getValue().toString(10, true));
+
+    if (const FloatingLiteral *FL = dyn_cast<FloatingLiteral>(E)) {
+      llvm::SmallString<1024> S;
+      FL->getValue().toString(S);
+      return cxstring::createDup(S.c_str());
+    }
+
+    if (const CharacterLiteral *Cl = dyn_cast<CharacterLiteral>(E)) {
+      char c[2];
+      c[0] = (char)Cl->getValue();
+      c[1] = '\0';
+      return cxstring::createDup(c);
+    }
+
+    if (const StringLiteral *Sl = dyn_cast<StringLiteral>(E))
+      return cxstring::createDup(Sl->getBytes());
+
+    if (const CXXBoolLiteralExpr *Bl = dyn_cast<CXXBoolLiteralExpr>(E))
+      return cxstring::createDup(Bl->getValue()?"true":"false");
+  }
+  return cxstring::createEmpty();
+}
+
+CXString clang_getExprString(CXCursor C) {
+  if (const Expr *E = getCursorExpr(C)) {
+      const ASTContext &Context = getCursorContext(C);
+
+      SmallString<1024> S;
+      llvm::raw_svector_ostream os(S);
+      E->printPretty(os, nullptr, Context.getPrintingPolicy());
+
+      return cxstring::createDup(os.str());
+  }
+  return cxstring::createEmpty();
+}
+
+CXCursor clang_getForStmtInit(CXCursor C)
+{
+  if(ForStmt *Node = (ForStmt*)(C.data[1])) {
+    if (Stmt *init = Node->getInit())
+      return MakeCXCursor(init, 0, (const CXTranslationUnit)(C.data[2]));
+    else
+      return MakeCXCursorInvalid(CXCursor_NoDeclFound);
+  }
+  return MakeCXCursorInvalid(CXCursor_InvalidCode);
+}
+
+CXCursor clang_getForStmtCond(CXCursor C)
+{
+  if(ForStmt *Node = (ForStmt*)(C.data[1])) {
+    if (Stmt *cond = Node->getCond())
+      return MakeCXCursor(cond, 0, (const CXTranslationUnit)(C.data[2]));
+    else
+      return MakeCXCursorInvalid(CXCursor_NoDeclFound);
+  }
+  return MakeCXCursorInvalid(CXCursor_InvalidCode);
+}
+
+CXCursor clang_getForStmtInc(CXCursor C)
+{
+  if(ForStmt *Node = (ForStmt*)(C.data[1])) {
+    if (Stmt *inc = Node->getInc())
+      return MakeCXCursor(inc, 0, (const CXTranslationUnit)(C.data[2]));
+    else
+      return MakeCXCursorInvalid(CXCursor_NoDeclFound);
+  }
+  return MakeCXCursorInvalid(CXCursor_InvalidCode);
+}
+
+CXCursor clang_getForStmtBody(CXCursor C)
+{
+  if(ForStmt *Node = (ForStmt*)(C.data[1])) {
+    if (Stmt *body = Node->getBody())
+      return MakeCXCursor(body, 0, (const CXTranslationUnit)(C.data[2]));
+    else
+      return MakeCXCursorInvalid(CXCursor_NoDeclFound);
+  }
+  return MakeCXCursorInvalid(CXCursor_InvalidCode);
+}
+
+CXType clang_getUnaryExprArgumentType(CXCursor C)
+{
+  CXTranslationUnit TU = getCursorTU(C);
+  if (const Expr *E = getCursorExpr(C)) {
+    if(const UnaryExprOrTypeTraitExpr *UE = dyn_cast<UnaryExprOrTypeTraitExpr>(E)) {
+      if (UE->isArgumentType()) {
+        QualType T = UE->getArgumentType();
+        return cxtype::MakeCXType(T, TU);
+      }
+    }
+  }
+  return cxtype::MakeCXType(QualType(), TU);
 }
 
 //===----------------------------------------------------------------------===//

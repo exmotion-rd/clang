@@ -223,7 +223,27 @@ CXCursor cxcursor::MakeCXCursor(const Stmt *S, const Decl *Parent,
   case Stmt::SEHLeaveStmtClass:
     K = CXCursor_SEHLeaveStmt;
     break;
-  
+
+  case Stmt::OffsetOfExprClass:
+    K = CXCursor_OffsetOfExpr;
+    break;
+
+  case Stmt::PredefinedExprClass:
+    K = CXCursor_PredefinedExpr;
+    break;
+
+  case Stmt::DesignatedInitExprClass:
+    K = CXCursor_DesignatedInitExpr;
+    break;
+
+  case Stmt::DesignatedInitUpdateExprClass:
+    K = CXCursor_DesignatedInitUpdateExpr;
+    break;
+
+  case Stmt::VAArgExprClass:
+    K = CXCursor_VAArgExpr;
+    break;
+
   case Stmt::ArrayTypeTraitExprClass:
   case Stmt::AsTypeExprClass:
   case Stmt::AtomicExprClass:
@@ -249,17 +269,13 @@ CXCursor cxcursor::MakeCXCursor(const Stmt *S, const Decl *Parent,
   case Stmt::ExprWithCleanupsClass:
   case Stmt::ExpressionTraitExprClass:
   case Stmt::ExtVectorElementExprClass:
-  case Stmt::ImplicitCastExprClass:
   case Stmt::ImplicitValueInitExprClass:
   case Stmt::NoInitExprClass:
   case Stmt::MaterializeTemporaryExprClass:
   case Stmt::ObjCIndirectCopyRestoreExprClass:
-  case Stmt::OffsetOfExprClass:
   case Stmt::ParenListExprClass:
-  case Stmt::PredefinedExprClass:
   case Stmt::ShuffleVectorExprClass:
   case Stmt::ConvertVectorExprClass:
-  case Stmt::VAArgExprClass:
   case Stmt::ObjCArrayLiteralClass:
   case Stmt::ObjCDictionaryLiteralClass:
   case Stmt::ObjCBoxedExprClass:
@@ -357,6 +373,10 @@ CXCursor cxcursor::MakeCXCursor(const Stmt *S, const Decl *Parent,
 
   case Stmt::CStyleCastExprClass:
     K = CXCursor_CStyleCastExpr;
+    break;
+
+  case Stmt::ImplicitCastExprClass:
+	K = CXCursor_ImplicitCastExpr;
     break;
 
   case Stmt::CompoundLiteralExprClass:

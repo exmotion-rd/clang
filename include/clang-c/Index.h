@@ -2130,7 +2130,19 @@ enum CXCursorKind {
    */
   CXCursor_ObjCAvailabilityCheckExpr     = 148,
 
-  CXCursor_LastExpr                      = CXCursor_ObjCAvailabilityCheckExpr,
+  CXCursor_ImplicitCastExpr              = 149,
+
+  CXCursor_OffsetOfExpr                  = 150,
+
+  CXCursor_PredefinedExpr                = 151,
+
+  CXCursor_DesignatedInitExpr            = 152,
+
+  CXCursor_DesignatedInitUpdateExpr      = 153,
+
+  CXCursor_VAArgExpr                     = 154,
+
+  CXCursor_LastExpr                      = CXCursor_VAArgExpr,
 
   /* Statements */
   CXCursor_FirstStmt                     = 200,
@@ -2669,6 +2681,11 @@ CINDEX_LINKAGE unsigned clang_isPreprocessing(enum CXCursorKind);
  *  unexposed piece of the AST (e.g., CXCursor_UnexposedStmt).
  */
 CINDEX_LINKAGE unsigned clang_isUnexposed(enum CXCursorKind);
+
+/***
+ * \brief Determine whether the given cursor has init expression.
+ */
+CINDEX_LINKAGE unsigned clang_hasInit(CXCursor);
 
 /**
  * \brief Describe the linkage of the entity referred to by a cursor.
@@ -3602,6 +3619,13 @@ CINDEX_LINKAGE CXType clang_getArrayElementType(CXType T);
  * If a non-array type is passed in, -1 is returned.
  */
 CINDEX_LINKAGE long long clang_getArraySize(CXType T);
+
+/**
+ * \brief Return the array size of a variable array.
+ *
+ * If a non - variable array type is passed in, an invalid type is returned.
+ */
+CINDEX_LINKAGE CXCursor clang_getVariableArraySize(CXType CT);
 
 /**
  * \brief Retrieve the type named by the qualified-id.
@@ -6277,6 +6301,55 @@ typedef enum CXVisitorResult (*CXFieldVisitor)(CXCursor C,
 CINDEX_LINKAGE unsigned clang_Type_visitFields(CXType T,
                                                CXFieldVisitor visitor,
                                                CXClientData client_data);
+
+/**
+ * \brief Returns string representation of unary and binary operators.
+ */
+CINDEX_LINKAGE CXString clang_getOperationString(CXCursor C);
+
+/**
+ * \brief Determine whether the given cursor kind is l-value.
+ */
+CINDEX_LINKAGE unsigned clang_isLValue(CXCursor C);
+
+/**
+ * \brief Returns string representation of literal cursor (1.f, 1000L, etc)
+ */
+CINDEX_LINKAGE CXString clang_getLiteralString(CXCursor C);
+
+/**
+ * \brief Returns string representation of Expression cursor
+ */
+CINDEX_LINKAGE CXString clang_getExprString(CXCursor C);
+
+/**
+ * \brief Returns for-loop init cursor [for(init;cond;inc)], or CXCursor_NoDeclFound if there is no decl,
+ * or CXCursor_InvalidCode if C is not CXCursor_ForStmt
+ */
+CINDEX_LINKAGE CXCursor clang_getForStmtInit(CXCursor C);
+
+/**
+ * \brief Returns for-loop condition cursor [for(init;cond;inc)], or CXCursor_NoDeclFound if there is no decl,
+ * or CXCursor_InvalidCode if C is not CXCursor_ForStmt
+ */
+CINDEX_LINKAGE CXCursor clang_getForStmtCond(CXCursor C);
+
+/**
+ * \brief Returns for-loop increment cursor [for(init;cond;inc)], or CXCursor_NoDeclFound if there is no decl,
+ * or CXCursor_InvalidCode if C is not CXCursor_ForStmt
+ */
+CINDEX_LINKAGE CXCursor clang_getForStmtInc(CXCursor C);
+
+/**
+ * \brief Returns for-loop body, or CXCursor_NoDeclFound if there is no decl,
+ * or CXCursor_InvalidCode if C is not CXCursor_ForStmt
+ */
+CINDEX_LINKAGE CXCursor clang_getForStmtBody(CXCursor C);
+
+/**
+ * \brief Returns unary expr argument type
+ */
+CINDEX_LINKAGE CXType clang_getUnaryExprArgumentType(CXCursor C);
 
 /**
  * @}
