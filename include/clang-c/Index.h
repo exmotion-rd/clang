@@ -3407,6 +3407,11 @@ CINDEX_LINKAGE CXCursor clang_getVariableArraySize(CXType CT);
 CINDEX_LINKAGE CXType clang_Type_getNamedType(CXType T);
 
 /**
+ * \brief Return the class type of an unqualified type.
+ */
+CINDEX_LINKAGE CXType clang_getUnqualifiedType(CXType CT);
+
+/**
  * \brief List the possible error codes for \c clang_Type_getSizeOf,
  *   \c clang_Type_getAlignOf, \c clang_Type_getOffsetOf and
  *   \c clang_Cursor_getOffsetOf.

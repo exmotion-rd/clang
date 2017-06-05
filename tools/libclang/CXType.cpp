@@ -1015,4 +1015,12 @@ CXType clang_Type_getNamedType(CXType CT){
   return MakeCXType(QualType(), GetTU(CT));
 }
 
-} // end: extern "C"
+CXType clang_getUnqualifiedType(CXType CT) {
+  QualType T = GetQualType(CT);
+  const QualType UnqualT = T.getUnqualifiedType();
+
+  return MakeCXType(UnqualT, GetTU(CT));
+}
+
+}
+// end: extern "C"
