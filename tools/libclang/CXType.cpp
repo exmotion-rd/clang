@@ -1118,3 +1118,10 @@ unsigned clang_Type_isTransparentTagTypedef(CXType TT){
   }
   return false;
 }
+
+CXType clang_getUnqualifiedType(CXType CT) {
+  QualType T = GetQualType(CT);
+  const QualType UnqualT = T.getUnqualifiedType();
+
+  return MakeCXType(UnqualT, GetTU(CT));
+}
