@@ -262,8 +262,6 @@ CXCursor cxcursor::MakeCXCursor(const Stmt *S, const Decl *Parent,
   case Stmt::CXXScalarValueInitExprClass:
   case Stmt::CXXUuidofExprClass:
   case Stmt::ChooseExprClass:
-  case Stmt::DesignatedInitExprClass:
-  case Stmt::DesignatedInitUpdateExprClass:
   case Stmt::ArrayInitLoopExprClass:
   case Stmt::ArrayInitIndexExprClass:
   case Stmt::ExprWithCleanupsClass:
