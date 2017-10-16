@@ -2142,7 +2142,9 @@ enum CXCursorKind {
 
   CXCursor_VAArgExpr                     = 154,
 
-  CXCursor_LastExpr                      = CXCursor_VAArgExpr,
+  CXCursor_AtomicExpr                    = 155,
+
+  CXCursor_LastExpr                      = CXCursor_AtomicExpr,
 
   /* Statements */
   CXCursor_FirstStmt                     = 200,

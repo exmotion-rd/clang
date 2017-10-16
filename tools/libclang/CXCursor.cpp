@@ -244,9 +244,12 @@ CXCursor cxcursor::MakeCXCursor(const Stmt *S, const Decl *Parent,
     K = CXCursor_VAArgExpr;
     break;
 
+  case Stmt::AtomicExprClass:
+    K = CXCursor_AtomicExpr;
+    break;
+
   case Stmt::ArrayTypeTraitExprClass:
   case Stmt::AsTypeExprClass:
-  case Stmt::AtomicExprClass:
   case Stmt::BinaryConditionalOperatorClass:
   case Stmt::TypeTraitExprClass:
   case Stmt::CoroutineBodyStmtClass:
