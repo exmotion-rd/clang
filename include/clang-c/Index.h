@@ -2142,7 +2142,9 @@ enum CXCursorKind {
 
   CXCursor_VAArgExpr                     = 154,
 
-  CXCursor_AtomicExpr                    = 155,
+  CXCursor_BinaryConditionalOperator     = 155,
+
+  CXCursor_AtomicExpr                    = 156,
 
   CXCursor_LastExpr                      = CXCursor_AtomicExpr,
 

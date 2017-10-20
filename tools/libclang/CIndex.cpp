@@ -4858,6 +4858,10 @@ CXString clang_getCursorKindSpelling(enum CXCursorKind Kind) {
     return cxstring::createRef("DesignatedInitUpdateExpr");
   case CXCursor_VAArgExpr:
     return cxstring::createRef("VAArgExpr");
+  case CXCursor_AtomicExpr:
+    return cxstring::createRef("AtomicExpr");
+  case CXCursor_BinaryConditionalOperator:
+    return cxstring::createRef("BinaryConditionalOperator");
   case CXCursor_UnexposedExpr:
       return cxstring::createRef("UnexposedExpr");
   case CXCursor_DeclRefExpr:
