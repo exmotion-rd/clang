@@ -103,6 +103,9 @@ static CXTypeKind GetTypeKind(QualType T) {
     TKCASE(Auto);
     TKCASE(Elaborated);
     TKCASE(Pipe);
+    TKCASE(TemplateTypeParm);
+    TKCASE(SubstTemplateTypeParm);
+    TKCASE(TemplateSpecialization);
     default:
       return CXType_Unexposed;
   }

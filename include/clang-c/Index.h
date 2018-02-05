@@ -3209,7 +3209,11 @@ enum CXTypeKind {
   CXType_OCLSampler = 157,
   CXType_OCLEvent = 158,
   CXType_OCLQueue = 159,
-  CXType_OCLReserveID = 160
+  CXType_OCLReserveID = 160,
+
+  CXType_TemplateTypeParm = 161,
+  CXType_SubstTemplateTypeParm = 162,
+  CXType_TemplateSpecialization = 163,
 };
 
 /**
