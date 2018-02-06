@@ -497,6 +497,9 @@ try_again:
     break;
 
   // FIXME: Template type parameters!      
+  case Type::TemplateTypeParm:
+    D = cast<TemplateTypeParmType>(TP)->getDecl();
+    break;
 
   case Type::Elaborated:
     TP = cast<ElaboratedType>(TP)->getNamedType().getTypePtrOrNull();
@@ -569,6 +572,9 @@ CXString clang_getTypeKindSpelling(enum CXTypeKind K) {
     TKIND(Auto);
     TKIND(Elaborated);
     TKIND(Pipe);
+    TKIND(TemplateTypeParm);
+    TKIND(SubstTemplateTypeParm);
+    TKIND(TemplateSpecialization);
 #define IMAGE_TYPE(ImgType, Id, SingletonId, Access, Suffix) TKIND(Id);
 #include "clang/Basic/OpenCLImageTypes.def"
 #undef IMAGE_TYPE
